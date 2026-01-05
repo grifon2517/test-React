@@ -1,7 +1,11 @@
 import './App.css';
-
+import { MyComponent } from './Components/MyComponent';
 const App = () => {
-	return <></>;
+	return (
+		<>
+			<MyComponent></MyComponent>
+		</>
+	);
 };
 
 export default App;
