@@ -1,44 +1,35 @@
-import { useState, useRef } from 'react';
-import * as yup from 'yup';
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
+import { useState, useActionState } from 'react';
 
 import styles from './app.module.css';
 
-const fieldsScheme = yup.object().shape({
-	login: yup
-		.string()
-		.matches(/^[\w_]*$/, 'Должны использоваться буквы, цифры и нижнее подчеркивание')
-		.max(20, 'Должно быть более 20 символов')
-		.min(3, 'Должно быть не менее 3 символов'),
-});
+const sendData = async (_, formData) => {
+	const data = {
+		email: formData.get('email'),
+		login: formData.get('login'),
+		password: formData.get('password'),
+	};
+	await new Promise((resolve) => setTimeout(resolve, 2000));
+
+	return { message: 'Данные отправлены', data };
+};
 
 export const App = () => {
-	const {
-		register,
-		handleSubmit,
-		formState: { errors },
-	} = useForm({
-		defaultValues: {
-			login: '',
-		},
-		resolver: yupResolver(fieldsScheme),
-	});
-
-	const loginError = errors.login?.message;
-	const onSubmit = (formData) => {
-		console.log(formData);
-	};
+	const [message, submitAction, isPending] = useActionState(sendData, null);
 
 	return (
 		<div className={styles.app}>
-			<form onSubmit={handleSubmit(onSubmit)}>
-				{loginError && <div className={styles.errorLabel}>{loginError}</div>}
-				<input name="login" type="text" {...register('login')} />
-				<button type="submit" disabled={!!loginError}>
+			<form action={submitAction}>
+				<input type="email" name="email" placeholder="Почта" />
+				<input type="login" name="login" placeholder="Логин" />
+				<input type="password" name="password" placeholder="Пароль" />
+				<button type="reset" disabled={isPending}>
+					Сброс
+				</button>
+				<button type="submit" disabled={isPending}>
 					Отправить
 				</button>
 			</form>
+			<div>{message && message.message}</div>
 		</div>
 	);
 };
