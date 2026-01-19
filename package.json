@@ -12,6 +12,7 @@
   "dependencies": {
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",
+    "firebase": "^12.8.0",
     "prettier": "^3.7.4",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"
