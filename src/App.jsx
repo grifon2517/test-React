@@ -1,52 +1,58 @@
 import styles from './App.module.css';
-import { useCallback, useState, memo, useMemo } from 'react';
+import { useState, useEffect, Component } from 'react';
 
-export const Field = memo(({ name, value, onChange, label }) => {
-	console.log(name);
-	return (
-		<label>
-			<span>{label}: </span>
-			<input type="number" name={name} value={value} onChange={onChange} />
-		</label>
-	);
-});
+export const App = ({ message }) => {
+	const [screenWidth, setScreenWidth] = useState(window.innerWidth);
 
-export const App = () => {
-	console.log('------APP-----');
-	const [num, setNum] = useState(0);
-	const [degree, setDegree] = useState(0);
+	useEffect(() => {
+		console.log(message);
 
-	const onNumChange = useCallback(({ target }) => {
-		setNum(Number(target.value));
+		const updateScreenWidth = () => setScreenWidth(window.innerWidth);
+
+		window.addEventListener('resize', updateScreenWidth);
+		return () => window.removeEventListener('resize', updateScreenWidth);
 	}, []);
-
-	const onDegreeChange = useCallback(({ target }) => {
-		setDegree(Number(target.value));
-	}, []);
-
-	const hardCalculatedNum = useMemo(
-		() => new Array(50000000).fill(0).reduce((res, el) => res + el, num),
-		[num],
-	);
-
-	const result = Math.pow(hardCalculatedNum, degree);
 
 	return (
 		<>
 			<div className={styles.App}>
-				<div>
-					{num} в степени {degree} = {result}
-				</div>
-				<Field name="num" label="Число" value={num} onChange={onNumChange} />
-				<Field
-					name="degree"
-					label="Степень"
-					value={degree}
-					onChange={onDegreeChange}
-				/>
+				{message} : {screenWidth}
 			</div>
 		</>
 	);
 };
+
+export class OldApp extends Component {
+	// state = 0; как вариант объявить состояние здесь
+	constructor(props) {
+		super(props);
+
+		this.state = {
+			screenWidth: window.innerWidth,
+		};
+		// this.updateScreenWidth = this.updateScreenWidth.bind(this)
+	}
+	updateScreenWidth = () => {
+		this.setState({ screenWidth: window.innerWidth });
+	};
+	componentDidMount() {
+		console.log(this.props.message);
+
+		window.addEventListener('resize', this.updateScreenWidth);
+	}
+
+	componentWillUnmount() {
+		window.removeEventListener('resize', this.updateScreenWidth);
+	}
+
+	render() {
+		return (
+			<div className={styles.App}>
+				{this.props.message}
+				{this.state.screenWidth}
+			</div>
+		);
+	}
+}
 
 export default App;

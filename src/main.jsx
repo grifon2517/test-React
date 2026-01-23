@@ -1,6 +1,11 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import './index.css';
-import App from './App.jsx';
+import { App, OldApp } from './App.jsx';
 
-createRoot(document.getElementById('root')).render(<App />);
+createRoot(document.getElementById('root')).render(
+	<>
+		<App message="Функциональный компонент" />,
+		<OldApp message="Классовый компонент" />,
+	</>,
+);
