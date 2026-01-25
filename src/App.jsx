@@ -1,58 +1,68 @@
+import { resumeToPipeableStream } from 'react-dom/server';
 import styles from './App.module.css';
-import { useState, useEffect, Component } from 'react';
 
-export const App = ({ message }) => {
-	const [screenWidth, setScreenWidth] = useState(window.innerWidth);
+const withLogin = (Component) => {
+	const NewComponent = (props) => {
+		console.log(props.user);
 
-	useEffect(() => {
-		console.log(message);
+		return <Component {...props} />;
+	};
 
-		const updateScreenWidth = () => setScreenWidth(window.innerWidth);
+	return NewComponent;
+};
 
-		window.addEventListener('resize', updateScreenWidth);
-		return () => window.removeEventListener('resize', updateScreenWidth);
-	}, []);
+const withLogingAndColor = (Component, color) => {
+	const NewComponent = (props) => {
+		console.log(props.user);
+
+		return (
+			<span style={{ color }}>
+				<Component {...props} />
+			</span>
+		);
+	};
+
+	return NewComponent;
+};
+
+export const HelloMessgae = ({ user }) => {
+	return <span>Привет, {user}</span>;
+};
+
+export const GoodBye = ({ user }) => {
+	return <span>Пока, {user}</span>;
+};
+
+export const UserWidget = ({ Message }) => {
+	const user = 'Гриха';
 
 	return (
-		<>
-			<div className={styles.App}>
-				{message} : {screenWidth}
-			</div>
-		</>
+		<div>
+			<div>Текущий пользователь: {user}</div>
+			<div>Сообщение: </div>
+			<HelloMessageWithLogin user={user} />
+			<br></br>
+			<HelloWithLogingAndColor user={user} />
+			{/* {render(user)} */}
+			{/* {children(user)} */}
+			{/* <HelloMessgae user={user}/>
+			<GoodBye user={user}/> */}
+		</div>
 	);
 };
 
-export class OldApp extends Component {
-	// state = 0; как вариант объявить состояние здесь
-	constructor(props) {
-		super(props);
+const HelloMessageWithLogin = withLogin(HelloMessgae);
+const HelloWithLogingAndColor = withLogingAndColor(HelloMessgae, 'red');
 
-		this.state = {
-			screenWidth: window.innerWidth,
-		};
-		// this.updateScreenWidth = this.updateScreenWidth.bind(this)
-	}
-	updateScreenWidth = () => {
-		this.setState({ screenWidth: window.innerWidth });
-	};
-	componentDidMount() {
-		console.log(this.props.message);
-
-		window.addEventListener('resize', this.updateScreenWidth);
-	}
-
-	componentWillUnmount() {
-		window.removeEventListener('resize', this.updateScreenWidth);
-	}
-
-	render() {
-		return (
-			<div className={styles.App}>
-				{this.props.message}
-				{this.state.screenWidth}
-			</div>
-		);
-	}
-}
+export const App = () => {
+	return (
+		<div className={styles.App}>
+			{/* <UserWidget> {(user) => <HelloMessgae user={user} />} </UserWidget> */}
+			{/* <UserWidget render={(user) => <GoodBye user={user} />} /> */}
+			<UserWidget />
+			{/* <UserWidget Message={GoodBye} /> */}
+		</div>
+	);
+};
 
 export default App;
